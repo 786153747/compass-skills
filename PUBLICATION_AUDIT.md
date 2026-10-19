@@ -1,6 +1,6 @@
 # Publication Audit
 
-Audit date: 2026-08-25
+Initial audit date: 2026-08-25. The [2026-10-19 addition](#2026-10-19-addition) records the current publication checks without rewriting the earlier results below.
 
 Scope:
 
@@ -89,3 +89,32 @@ Path/privacy scans were run across Markdown, Python, YAML, and JSON files. Inten
 - synthetic email, mobile-phone, identity-number, and image-metadata values inside the test files, used only to verify that interviewer-facing data rejects or strips those fields.
 
 No personal absolute path, real candidate identity, contact detail, credential, browser-session export, remote publish action, or private maintenance record remains in `assess-interview-candidate`.
+
+## 2026-10-19 addition
+
+### Scope
+
+- Added the independent Clear Communication skill, its original hypothetical examples, optional host interface metadata, design-source notes, and two retained upstream MIT notices.
+- Kept the core instructions and examples byte-identical to the existing writing skill. The original project and user-level installation remain unchanged.
+- Updated all three README files, the agent adapter, and the skill catalogue to include ten released skills.
+- Reviewed the existing candidate-age changes: explicit self-reported age takes precedence, partial birth dates retain the appropriate precision, and a labeled assumption-based estimate is displayed while audit bounds remain available.
+- Fixed the self-reported-age display validator so that a structured age of 27 cannot validate a display of 127, a conflicting age, a fractional age, or a negative age. Added a regression test that failed before the fix and passed afterward.
+- Included seven existing suitcase-example screenshots after visual and PNG-metadata inspection. They illustrate conversations rather than establish model-performance differences.
+
+### Checks completed
+
+- Candidate assessment: 83 tests passed on Python 3.11 and Python 3.14. The suite includes public-package privacy checks, Python 3.10 syntax parsing, age and portrait contracts, report generation, and offline report validation.
+- Ruff passed for the candidate scripts and tests. The report template's executable inline JavaScript passed Node syntax checking.
+- Clear Communication passed the repository's structural package validator with no errors or warnings, and both changed skill packages passed the Skill structure validator using the existing Python 3.11 environment.
+- All repository JSON files parsed; the catalogue names exactly match the ten released skill directories. Local Markdown links in the changed documentation and new skill files resolve.
+- With skills CLI 1.5.23, local discovery found ten skills. Copy installation into isolated Codex and Claude Code project directories preserved all six Clear Communication package files byte for byte, including source and license notes.
+- Codex 0.163.0-alpha.10.2 discovered the temporary package as an enabled repository skill through its native skills-list interface.
+- Claude Code 2.1.296 listed the temporary package as a project skill through its native initialization interface, using an isolated configuration directory with hooks disabled. Neither native check sent a model task.
+- New writing instructions and changed documentation were checked for machine-specific user paths. The core instructions and examples contained no email address or credential assignment. The seven screenshots showed no private identity, contact detail, or local path, and contained no text or EXIF metadata.
+- Source revisions and MIT notices were verified against the inspected upstream checkouts. The Federation definition is linked through Clarity's institutional page; the older reference URL was not reused after it returned unrelated content during this audit.
+
+### Remaining boundaries
+
+These checks establish package structure, installation, native discovery, and the tested candidate-report behavior. They do not measure reader comprehension, test automatic skill selection on real model tasks, or establish behavior across all Harnesses.
+
+No physical Windows or Linux host was used. The previously pending independent browser visual review of the candidate portrait layout remains pending; this update checked its template syntax and existing render and offline contracts.

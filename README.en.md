@@ -20,9 +20,9 @@
 npx skills add dongshuyan/compass-skills --skill '*' -a claude-code
 ```
 
-COMPASS Skills gives AI agents nine local skills: five runtime collaboration skills, two run-history skill-engineering skills, one academic humanization skill, and one local hiring-support skill.
+COMPASS Skills gives AI agents ten local skills: five runtime collaboration skills, two run-history skill-engineering skills, two writing and communication skills, and one local hiring-support skill.
 
-The project currently ships nine `SKILL.md` skills:
+The project currently ships ten `SKILL.md` skills:
 
 | Skill | Purpose |
 | --- | --- |
@@ -33,10 +33,11 @@ The project currently ships nine `SKILL.md` skills:
 | [`user-profile-keeper`](skills/user-profile-keeper/) | Maintains a local, auditable, correctable collaboration profile for communication preferences, risk style, and recurring working context. |
 | [`run-history-skill-builder`](skills/run-history-skill-builder/) | Turns completed or repeatedly refined run history into a new reusable skill package or a reviewed skill-design plan. |
 | [`run-history-skill-upgrader`](skills/run-history-skill-upgrader/) | Automatically turns session evidence from real execution, encountered and resolved difficulties, validation results, and user feedback into an upgrade plan for an existing skill, forming the simplest controlled self-evolution loop; it applies changes only after explicit approval. |
+| [`clear-communication`](skills/clear-communication/) | Organizes explanations, reports, comparisons, and instructions around the reader’s task while preserving facts, conditions, uncertainty, and verification state. |
 | [`academic-humanizer`](skills/academic-humanizer/) | Helps write or revise English and Chinese academic prose by removing formulaic AI-like patterns and restoring a natural scholarly voice while preserving claims, evidence strength, and logical relations. |
 | [`assess-interview-candidate`](skills/assess-interview-candidate/) | Turns an authorized resume and job description into an auditable evidence layer and a concise three-part offline interviewer report, with locally sanitized resume portraits and bounded timeline-age estimates kept outside scoring. |
 
-For multi-skill repositories, install only the functions you actually need. Use `pause-and-resume` when the same AI conversation will remain available; use `session-handoff-prompt` when work must move to a fresh conversation. The `run-history` pair supports skill engineering, and `academic-humanizer` improves academic prose without changing its claims.
+For multi-skill repositories, install only the functions you actually need. Use `pause-and-resume` when the same AI conversation will remain available; use `session-handoff-prompt` when work must move to a fresh conversation. The `run-history` pair supports skill engineering. Use `clear-communication` to organize explanations for the reader, and `academic-humanizer` to improve academic prose without changing its claims.
 
 ## Quick Start
 
@@ -68,11 +69,12 @@ $session-handoff-prompt
 $user-profile-keeper
 $run-history-skill-builder
 $run-history-skill-upgrader
+$clear-communication
 $academic-humanizer
 $assess-interview-candidate
 ```
 
-For manual installation, copy the nine folders under [`skills/`](skills/) into the agent's local skills directory and keep their `references/`, `scripts/`, `assets/`, `evals/`, and `agents/` subdirectories intact.
+For manual installation, copy the required folders under [`skills/`](skills/) into the agent's local skills directory and keep their `references/`, `scripts/`, `assets/`, `evals/`, and `agents/` subdirectories intact.
 
 ## Why COMPASS Exists
 
@@ -118,11 +120,95 @@ task-forest            -> where does this task fit and is it still aligned?
 pause-and-resume       -> where should this AI conversation stop and continue later?
 session-handoff-prompt -> what should the next AI conversation know to continue now?
 task-clarifier         -> what should the agent do now?
+clear-communication    -> what does this reader need to understand or do?
 run-history-skill-builder  -> how do we package this proven workflow as a new skill?
 run-history-skill-upgrader -> how does a skill self-evolve safely from real session evidence?
 academic-humanizer         -> how do we remove AI-sounding prose without changing its claims?
 assess-interview-candidate -> how do we prepare a focused, evidence-bounded human interview?
 ```
+
+## Clear communication
+
+`clear-communication` helps an agent turn source material into explanations, progress reports, comparisons, instructions, and documents that a reader can understand and use. It preserves facts, important conditions, uncertainty, and what has actually been checked. Use it when the material is accurate but hard to follow, or when a detailed record needs to become a useful explanation.
+
+The package contains [the writing workflow](skills/clear-communication/SKILL.md), [hypothetical examples](skills/clear-communication/references/examples.md), [source notes](skills/clear-communication/references/sources.md), and retained license notices. Its optional `agents/openai.yaml` supplies interface metadata. The writing workflow itself has no script or external-service dependency.
+
+### Install one skill, in the scope you need
+
+Install into the current project for Codex and Claude Code:
+
+```bash
+npx skills add dongshuyan/compass-skills --skill clear-communication -a codex -a claude-code
+```
+
+Add `-g` for a user-level installation across that user's projects:
+
+```bash
+npx skills add dongshuyan/compass-skills --skill clear-communication -a codex -a claude-code -g
+```
+
+For manual installation, copy the entire skill folder, including `references/` and its license notices. Use the host's actual discovery directory:
+
+| Host | Project scope | User scope |
+| --- | --- | --- |
+| Codex | `.agents/skills/clear-communication/` | `<user-home>/.agents/skills/clear-communication/` |
+| Claude Code | `.claude/skills/clear-communication/` | `<user-home>/.claude/skills/clear-communication/` |
+| Other Harnesses | Their configured skill directory, or the [AGENTS adapter](AGENTS.md) | Their configured user skill directory |
+
+Here, `<user-home>` means the operating-system user's home directory. User-level installation is local to that user; it does not deploy the skill to another machine or a cloud session. A shared folder with supported symlinks can serve both hosts. If a destination already exists, compare it before replacing any customized content. Check the host's skill list after installation; start a new session if the current one has not refreshed.
+
+### Manual and automatic invocation
+
+In Codex:
+
+```text
+$clear-communication Explain the material below to a colleague who does not write code. Preserve the important conditions and distinguish completed work from unverified behavior.
+```
+
+In Claude Code:
+
+```text
+/clear-communication Explain the material below to a colleague who does not write code. Preserve the important conditions and distinguish completed work from unverified behavior.
+```
+
+A Harness is the application that loads instructions, exposes tools, and manages the agent conversation. Codex and Claude Code can make a skill's description available for automatic selection. The model then judges whether the task matches it. This package keeps the default settings that permit both manual invocation and automatic selection; selection is not a promise that the skill will run on every turn.
+
+The Harness controls availability and invocation policy. For example, Codex can restrict implicit invocation through `agents/openai.yaml`; Claude Code can restrict it through `disable-model-invocation` or its skill settings. Other Harnesses have their own rules. For an environment without native routing, ask the agent to read [SKILL.md](skills/clear-communication/SKILL.md) and follow it through [AGENTS.md](AGENTS.md).
+
+### Writing workflow
+
+1. Identify the reader's current question and what the answer should help them understand or do.
+2. Extract the facts, conditions, exceptions, numbers, uncertainty, and verification state that must survive.
+3. Choose an order suited to the task: answer first for a question, dependent steps for a tutorial, decision-relevant differences for a comparison.
+4. Explain who does what and why the facts support the conclusion. Keep useful technical terms and connect unfamiliar ones to their behavior.
+5. Compare the result with the source. Check for missing conditions, stronger claims, confusing references, or an unclear next action.
+
+These are instructions for the model, rather than a program that forces a fixed number of steps or scores readability. Examples guide editorial choices; a reader still needs to assess the actual output. For academic work, retain the field's terminology and evidence constraints, and combine this skill with `academic-humanizer` when prose editing is also needed.
+
+### Example: maintenance notes become a first-use explanation
+
+This is a hypothetical example. A colleague asks how to start using NoteBox. The notes say:
+
+- Click New note to write; content saves automatically in the current browser. One real save operation has been checked.
+- The cloud-sync button exists, but its service is not connected.
+- Closing the window preserves notes. Clearing browser data deletes local notes.
+- The maintenance record also lists 23 local checks, `sync_enabled=false`, and a plan to organize logs later.
+
+A reader-oriented answer is:
+
+> Open NoteBox and click New note to start writing. Your notes save automatically in the current browser; one save operation has been checked.
+>
+> Cloud sync is not available yet, so you cannot rely on it to read these notes on another device.
+>
+> Closing the window keeps your notes. Clearing browser data deletes the local notes.
+
+The explanation leads with the action and keeps the storage and deletion conditions together. The internal field and maintenance count remain in the maintenance record because they do not change this reader's next action. A maintenance review could need those details again.
+
+### Portability, privacy, and evidence
+
+The core skill is intended for Harnesses that can read and follow `SKILL.md`. It uses no specific tool API, shell command, operating-system path, network service, or hardware interface. Installation, routing, permissions, and context retention still depend on the host. The optional OpenAI interface metadata is not required by other hosts.
+
+The release package contains generic instructions and hypothetical examples, with no personal source material or machine-specific user paths. Material supplied at runtime is handled under the host's permissions and data policies. Structure checks and installation checks establish package validity and availability; they do not establish a comprehension improvement or universal behavior across Harnesses.
 
 ## Task Clarifier Example
 
@@ -200,6 +286,8 @@ One last decision remains:
 - The next step is specific model recommendations, unless the user prefers an evaluation framework.
 
 </details>
+
+The [original example screenshots](assets/exp/show/) show ordinary answers and an explicitly invoked clarification conversation. They illustrate the interaction; they are not a controlled comparison of model performance.
 
 ## Screenshots
 
@@ -367,9 +455,10 @@ The public install path has been validated with `skills@1.5.11`:
 - `npx skills add dongshuyan/compass-skills --skill '*' -a claude-code --copy -y` installs the released skills into a temporary project's `.claude/skills/` directory.
 - `python3 skills/session-handoff-prompt/scripts/smoke_test_handoff.py --skill-dir skills/session-handoff-prompt` validates compacted-event projection, task-forest read-only summaries, local validation, and shareable redaction.
 - `printf '%s\n' 'Samples were randomized.' | python3 skills/academic-humanizer/scripts/metrics.py - --json` provides read-only descriptive diagnostics for language routing, process leaks, and contrast candidates without assigning an authorship or quality score.
-- With `skills@1.5.23`, the current local source is detected as nine skills; `pause-and-resume` copies successfully into temporary Codex and Claude Code skill roots with byte-identical `SKILL.md` files.
+- With `skills@1.5.23`, the current local source is detected as ten skills; `pause-and-resume` copies successfully into temporary Codex and Claude Code skill roots with byte-identical `SKILL.md` files.
+- `clear-communication` passes the package and Skill structure validators. A temporary copy installation for Codex and Claude Code preserves all six package files byte for byte. Codex `0.163.0-alpha.10.2` and Claude Code `2.1.296` both discover that temporary project skill through their native interfaces; this check sends no model task.
 - `pause-and-resume` passes the Skill validator. Its published file is byte-identical to the source used for the completed Codex pause/resume behavior tests.
-- `assess-interview-candidate` has 77 passing unit and public-package tests on Python 3.11 and 3.14. It also passes the Skill validator, Ruff, JSON parsing, Python 3.10 syntax parsing, JavaScript syntax checking, and offline report contract validation. An independent live-browser visual pass for the portrait layout remains pending.
+- `assess-interview-candidate` has 83 passing unit and public-package tests on Python 3.11 and 3.14. It also passes the Skill validator, Ruff, JSON parsing, Python 3.10 syntax parsing, JavaScript syntax checking, and offline report contract validation. An independent live-browser visual pass for the portrait layout remains pending.
 - Windows and Linux compatibility is enforced through path, launcher, standard-library, reserved-filename, and shell-neutral contracts. This release was not run on physical Windows or Linux hosts.
 
 ## Roadmap
@@ -380,6 +469,18 @@ Planned additions:
 - Upgrade existing skills from observed failures, feedback, and validation evidence.
 - Summarize local agent states, waiting-human items, risks, and review queues.
 - Recommend low-switching-cost follow-up tasks from the task graph.
+
+## Acknowledgements
+
+Clear Communication draws on the following work:
+
+- [GPT with Taste](https://github.com/NB-Corp/gpt-with-taste/tree/079fb262b4d7932515ba4e6341fd57b6f2122f4a): reader-first organization and selection of information that serves the current task.
+- [plain-english](https://github.com/Tradelord223/plain-english/tree/d108f2b61544cdabb33cd67f6365faf3f51259a9): preservation of meaning, certainty, conditions, operational state, and exact technical names.
+- The [International Plain Language Federation definition, reproduced by Clarity](https://www.clarity-international.org/): assessing whether the intended audience can locate, understand, and apply needed information.
+- [plain-writing-skill](https://github.com/docwriter-org/plain-writing-skill/tree/f0d3630983ac7a82aa580f1c1509d72df739ee12): paired tasks and anonymous review as evaluation methods.
+- [Agrawal and Carpuat, TACL 2024](https://aclanthology.org/2024.tacl-1.24/): reading-comprehension questions as an additional meaning-preservation check.
+
+The [source notes](skills/clear-communication/references/sources.md) distinguish adapted writing principles from methodological references. Original MIT notices are retained in the skill package and linked from [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). These references do not establish this skill's effectiveness.
 
 ## License
 

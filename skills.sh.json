@@ -22,6 +22,13 @@
       ]
     },
     {
+      "title": "Communication",
+      "description": "Organize explanations, reports, comparisons, and instructions for the reader while preserving facts, conditions, uncertainty, and verification state.",
+      "skills": [
+        "clear-communication"
+      ]
+    },
+    {
       "title": "Academic Writing",
       "description": "Fact-preserving drafting, auditing, and minimal revision for English and Chinese academic prose.",
       "skills": [

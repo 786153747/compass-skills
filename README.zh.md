@@ -23,7 +23,7 @@
 >
 > 从使用 `SKILL.md` 到搭建本地 Skill 系统，讲清楚最小结构、渐进披露、复用审计、AI 生成草稿、真实链路提炼和迭代验证。
 
-COMPASS 当前公开 9 个本地 skills：5 个运行时协作 skills、2 个 run-history skill 工程 skills、1 个学术润色 skill，以及 1 个本地招聘辅助 skill。核心协作层围绕用户画像、任务图谱、同一 AI 对话内暂停续跑、跨对话续接和需求对齐；`run-history` 双 skill 负责沉淀和升级 skill；`academic-humanizer` 负责自然、可信的学术表达；`assess-interview-candidate` 负责把获准处理的简历和岗位要求整理成可审计的候选人评估与离线面试报告。
+COMPASS 当前公开 10 个本地 skills：5 个运行时协作 skills、2 个 run-history skill 工程 skills、2 个写作与表达 skills，以及 1 个本地招聘辅助 skill。核心协作层围绕用户画像、任务图谱、同一 AI 对话内暂停续跑、跨对话续接和需求对齐；`run-history` 双 skill 负责沉淀和升级 skill；`clear-communication` 负责按读者需要组织解释；`academic-humanizer` 负责自然、可信的学术表达；`assess-interview-candidate` 负责把获准处理的简历和岗位要求整理成可审计的候选人评估与离线面试报告。
 
 当前公开版技能一览：
 
@@ -36,10 +36,13 @@ COMPASS 当前公开 9 个本地 skills：5 个运行时协作 skills、2 个 ru
 | [`user-profile-keeper`](skills/user-profile-keeper/) | 在本地维护可审计、可纠错、可撤回的协作画像。 |
 | [`run-history-skill-builder`](skills/run-history-skill-builder/) | 把已经跑通或反复打磨过的真实流程，打包成新的可复用 skill 或可审查设计方案。 |
 | [`run-history-skill-upgrader`](skills/run-history-skill-upgrader/) | 自动根据真实执行、遇到困难、解决困难、验证结果和用户反馈等 session 信息，为已有 skill 先产出升级方案，并把这个过程组织成最简单的 skill 受控自我进化闭环；只有在明确批准后才执行修改。 |
+| [`clear-communication`](skills/clear-communication/) | 按读者当前任务组织解释、汇报、比较和教程，保留事实、重要条件、证据强度和验证状态。 |
 | [`academic-humanizer`](skills/academic-humanizer/) | 帮助撰写或修改中英文学术论文，去除公式化、空泛、机械重复和暴露生成过程的 AI 式表达，在保留事实、证据强度和论证逻辑的同时恢复自然的学术作者声音。 |
 | [`assess-interview-candidate`](skills/assess-interview-candidate/) | 根据获准处理的简历与岗位要求，保留后台证据审计，并生成只有候选人简介、简历疑点和面试提问三个模块的离线 HTML；可显示经本地规范化的简历头像，并把受限履历年龄推算与评分严格隔离。 |
 
-多 skill 仓库建议按需安装。同一 AI 对话保留时使用 `pause-and-resume`；需要切换到新 AI 对话时使用 `session-handoff-prompt`。`run-history` 双 skill 面向其他 skills 的设计和维护，`academic-humanizer` 面向学术论文撰写过程中 AI 语气的预防，以及已有学术文本中 AI 语气的去除。
+多 skill 仓库建议按需安装。同一 AI 对话保留时使用 `pause-and-resume`；需要切换到新 AI 对话时使用 `session-handoff-prompt`。`run-history` 双 skill 面向其他 skills 的设计和维护，`clear-communication` 面向解释与信息组织，`academic-humanizer` 面向学术论文撰写过程中 AI 语气的预防，以及已有学术文本中 AI 语气的去除。
+
+原始演示截图见 [assets/exp/show/](assets/exp/show/)，包含普通问答和显式调用需求澄清 Skill 的对话。这些截图用于说明交互，不构成模型性能对照评测。
 
 ## 快速理解
 
@@ -180,7 +183,7 @@ DAG 关系视图：
 
 COMPASS 提供一套长期协作和 skill 演进流程：先读取用户协作画像，再查看任务森林；临时离开但保留当前 AI 对话时留下暂停检查点，需要换 AI 对话时生成续接 prompt，在行动前完成目标对齐；当某条流程已经跑通、值得沉淀，或某个现有 skill 需要根据真实 session 证据受控自我进化时，再进入 `run-history` 双 skill。
 
-## 五个核心协作 skills + 四个扩展 skills
+## 五个核心协作 skills + 五个扩展 skills
 
 | 层 | Skill | 解决的问题 |
 | --- | --- | --- |
@@ -191,6 +194,7 @@ COMPASS 提供一套长期协作和 skill 演进流程：先读取用户协作�
 | **知向** | [`$task-clarifier`](skills/task-clarifier/) | 把模糊需求对齐成三方一致的执行契约：用户想清楚、agent 听准确、用户能确认没跑偏。 |
 | **造技** | [`$run-history-skill-builder`](skills/run-history-skill-builder/) | 把已经跑通或反复打磨过的真实流程，抽成新的可复用 skill 包，或先生成不落文件的设计方案。 |
 | **修技** | [`$run-history-skill-upgrader`](skills/run-history-skill-upgrader/) | 自动根据真实执行、遇到困难、解决困难、验证结果和用户反馈等 session 信息，为已有 skill 先产出结构化升级方案，并把这个过程组织成最简单的 skill 受控自我进化闭环；只有在明确批准后才执行修改。 |
+| **明述** | [`$clear-communication`](skills/clear-communication/) | 按读者当前问题选取和组织信息，写清动作、原因、条件和下一步，并核对原意与证据范围。 |
 | **润文** | [`$academic-humanizer`](skills/academic-humanizer/) | 在保留事实、证据强度、逻辑关系和学术语域的前提下，避免或去除中英文学术论文中的 AI 语气，恢复自然的学术作者声音。 |
 | **识才** | [`$assess-interview-candidate`](skills/assess-interview-candidate/) | 把简历和岗位要求整理成可复核的岗位证据、核心疑点与结构化面试题，供有权限的招聘人员人工判断。 |
 
@@ -204,6 +208,7 @@ $session-handoff-prompt 让 AI 知道“新对话怎样像接着原来的对话�
 $task-clarifier 让 AI 知道“用户的需求到底是什么”。
 $run-history-skill-builder 让 AI 知道“这条已经跑通的流程怎样被沉淀成新的 skill”。
 $run-history-skill-upgrader 让 AI 知道“现有 skill 怎样根据真实 session 证据受控自我进化”。
+$clear-communication 让 AI 知道“读者需要理解什么或做什么，以及怎样把关系讲清楚”。
 $academic-humanizer 让 AI 知道“怎样在不改变学术命题的前提下避免或去除 AI 语气”。
 $assess-interview-candidate 让 AI 知道“怎样用可核验材料准备一场聚焦岗位的人工面试”。
 ```
@@ -228,8 +233,8 @@ README 统一用 `$skill-name` 表示显式点名。实际使用时可以采用�
 
 | Agent / 环境 | 推荐接入方式 |
 | --- | --- |
-| Codex | 复制 `skills/` 下需要的 released skill 目录到 Codex 可发现的 skills 目录，或作为 repo-local skills 使用；当前公开版共 9 个 skills。 |
-| Claude Code | 复制 `skills/` 下需要的 released skill 目录到 Claude Code 的 custom skills 目录，或放入项目 skills 根目录；当前公开版共 9 个 skills。 |
+| Codex | 复制 `skills/` 下需要的 released skill 目录到 Codex 可发现的 skills 目录，或作为 repo-local skills 使用；当前公开版共 10 个 skills。 |
+| Claude Code | 复制 `skills/` 下需要的 released skill 目录到 Claude Code 的 custom skills 目录，或放入项目 skills 根目录；当前公开版共 10 个 skills。 |
 | OpenClaw | 放入 workspace `skills/`、`.agents/skills` 或个人/托管 skills 目录；按 OpenClaw 的 skill precedence 生效。 |
 | OpenCode | 保留本 repo 的 `skills/` 和 [AGENTS.md](AGENTS.md)，让 agent 通过 AGENTS 规则发现并读取对应 `SKILL.md`。 |
 | 其他 agent | 只要能读取文件并运行本地脚本，就按 [AGENTS.md](AGENTS.md) 的通用协议加载：先读 `SKILL.md`，再按需读 `references/` 和运行 `scripts/`。 |
@@ -254,7 +259,7 @@ Repo: https://github.com/dongshuyan/compass-skills
 6. 最后报告安装位置、已安装 skills、安全检查结果、验证结果，以及如何在 AI 对话中调用。
 ```
 
-手动安装时，把 `skills/` 下需要的 released skill 目录复制到目标 agent 的本地 skills 目录；当前公开版共 9 个 skills。安装后可在 AI 对话中点名使用：
+手动安装时，把 `skills/` 下需要的 released skill 目录复制到目标 agent 的本地 skills 目录；当前公开版共 10 个 skills。安装后可在 AI 对话中点名使用：
 
 ```text
 $user-profile-keeper
@@ -264,6 +269,7 @@ $session-handoff-prompt
 $task-clarifier
 $run-history-skill-builder
 $run-history-skill-upgrader
+$clear-communication
 $academic-humanizer
 $assess-interview-candidate
 ```
@@ -275,6 +281,89 @@ $assess-interview-candidate
 
 要求：完整读取材料；PDF 同时做文字提取和逐页视觉核对；后台保留证据与校验数据；面试官 HTML 只保留候选人简介、岗位相关简历疑点和 12–18 道可直接照读的问题。候选人主动提供的学校、工作和城市直接显示，缺失信息不推测；年龄、籍贯和婚姻状况不得进入岗位评分或招聘决定。所有文件只保存到我批准的本地目录。
 ```
+
+## 清楚表达：clear-communication
+
+`clear-communication` 帮助 agent 把材料组织成读者能理解、能使用的解释、进度汇报、方案比较、教程或文档。它要求保留事实、重要条件、证据强度和实际执行状态，适合处理内容准确却难读的说明，也适合把密集维护记录整理成使用者需要的内容。
+
+技能包包含[写作流程](skills/clear-communication/SKILL.md)、[假设示例](skills/clear-communication/references/examples.md)、[来源说明](skills/clear-communication/references/sources.md)及原始许可声明。`agents/openai.yaml` 只提供可选界面元数据；写作流程本身没有脚本或外部服务依赖。
+
+### 按项目或用户范围安装
+
+只安装这一个 Skill，供当前项目中的 Codex 和 Claude Code 使用：
+
+```bash
+npx skills add dongshuyan/compass-skills --skill clear-communication -a codex -a claude-code
+```
+
+需要在当前系统用户的各项目中使用时，加上 `-g`：
+
+```bash
+npx skills add dongshuyan/compass-skills --skill clear-communication -a codex -a claude-code -g
+```
+
+手动安装时复制整个 Skill 目录，保留 `references/` 及其中的许可声明，并核对宿主实际使用的发现目录：
+
+| 宿主 | 项目级目录 | 用户级目录 |
+| --- | --- | --- |
+| Codex | `.agents/skills/clear-communication/` | `<用户主目录>/.agents/skills/clear-communication/` |
+| Claude Code | `.claude/skills/clear-communication/` | `<用户主目录>/.claude/skills/clear-communication/` |
+| 其他 Harness | 该宿主配置的技能目录，或通过 [AGENTS.md](AGENTS.md) 加载 | 该宿主配置的用户技能目录 |
+
+这里的用户主目录是操作系统用户的主目录。用户级全局安装仍在本机，只扩大到该用户的各项目，不会部署到其他机器或云端会话。两个宿主可以通过受支持的软链接共用一份内容；目标已有同名目录时，应先比较并保留自定义修改。安装后检查技能列表，当前会话尚未刷新时可新开会话。
+
+### 手动点名和自动选用
+
+Codex 中可以这样调用：
+
+```text
+$clear-communication 请向不写代码的同事解释下面的材料，保留重要条件，并区分已经完成和尚未验证的内容。
+```
+
+Claude Code 中使用原生调用方式：
+
+```text
+/clear-communication 请向不写代码的同事解释下面的材料，保留重要条件，并区分已经完成和尚未验证的内容。
+```
+
+Harness 是加载指令、提供工具并管理 agent 对话的运行环境，例如 Codex 和 Claude Code。这两个宿主可以把 Skill 的用途描述提供给模型，再由模型判断当前任务是否适用。本包保留默认的手动调用和自动选用能力；自动选用不等于每轮强制执行。
+
+宿主控制技能是否可见以及调用策略。例如，Codex 可以通过 `agents/openai.yaml` 限制隐式调用，Claude Code 可以通过 `disable-model-invocation` 或技能设置限制自动调用。其他 Harness 按各自规则处理；没有原生技能路由时，可按 [AGENTS.md](AGENTS.md) 要求 agent 先读取 [SKILL.md](skills/clear-communication/SKILL.md)。
+
+### 写作流程
+
+1. 确定读者当前的问题，以及回答需要帮助他理解什么或做什么。
+2. 从材料中提取必须保留的事实、条件、例外、数字、不确定性和验证状态。
+3. 按任务排序：回答问题先给答案，教程按操作依赖排列，比较方案围绕决策差异展开。
+4. 写清谁做什么、为什么这个事实支持这个结论；保留有用术语，并解释陌生术语在这里如何工作。
+5. 对照材料核对：有没有漏条件、强化结论、指代不清，或让读者猜下一步。
+
+这些是模型需要遵循的指引，没有程序强制固定步数或给可读性打分。示例帮助模型掌握取舍，实际效果仍要看输出。学术材料继续服从专业术语和证据约束；同时需要调整学术语气时，可以结合 `academic-humanizer` 使用。
+
+### 例子：把维护记录写成上手说明
+
+以下是假设例子。同事问刚装好的 NoteBox 怎么开始，手头材料是：
+
+- 点击“新建笔记”即可写作，内容自动保存在当前浏览器；自动保存做过一次实际操作检查。
+- 云同步按钮已放进界面，但服务尚未接通。
+- 关闭窗口不会删除笔记，清除浏览器数据会删除本地笔记。
+- 维护记录另列有 23 项本地检查、`sync_enabled=false`，以及下一版整理日志的计划。
+
+整理后的说明可以是：
+
+> 打开 NoteBox，点击“新建笔记”就能开始写。内容会自动保存在当前浏览器，自动保存已经做过一次实际操作检查。
+>
+> 云同步目前还不能用，因此暂时不能靠它在另一台设备上读取笔记。
+>
+> 关闭窗口不会删除笔记；清除浏览器数据会删除本地笔记。
+
+这里先交代操作，再把保存位置、同步限制和删除后果讲清楚。内部字段和维护计数留在维护记录里，因为它们不改变这位读者当前的操作；审查维护质量时，这些细节可能重新成为必要信息。
+
+### 可移植性、隐私和证据边界
+
+Skill 正文面向能够读取并遵循 `SKILL.md` 的 Harness，没有绑定特定工具 API、shell、操作系统路径、网络服务或硬件接口。安装、发现、权限和上下文保留由宿主决定，可选的 OpenAI 界面元数据不构成其他宿主的运行依赖。
+
+发布包只含通用规则、假设示例和来源说明，没有携带个人材料或本机用户路径。运行时输入材料仍按宿主的权限和数据规则处理。结构校验和安装检查能说明包是否有效、能否被发现，不能证明理解率改善或所有 Harness 下的行为效果。
 
 ## 五个核心协作 skills
 
@@ -417,10 +506,11 @@ $assess-interview-candidate
 - `python3 skills/session-handoff-prompt/scripts/smoke_test_handoff.py --skill-dir skills/session-handoff-prompt`：验证 Codex compacted 事件投影、task-forest 只读摘要、本机 handoff 校验和 shareable 脱敏。
 - `printf '%s\n' '本研究采用分层抽样。' | python3 skills/academic-humanizer/scripts/metrics.py - --json`：只读检查语言路由、过程残留和对立句式候选，不输出作者身份概率或质量分数。
 - `python3 -m py_compile ...`：验证新增 Python 脚本语法。
-- `skills.sh.json` 和 `evals/trigger-and-quality-cases.json` 已通过 JSON 解析。
-- 使用 `skills@1.5.23` 时，当前本地源码可被识别为 9 个 skills；`pause-and-resume` 已成功复制到临时 Codex 与 Claude Code skill 目录，两个 `SKILL.md` 副本与发布源逐字节一致。
+- `skills.sh.json` 与各 Skill 的 `evals/evals.json` 均可解析为 JSON。
+- 使用 `skills@1.5.23` 时，当前本地源码可被识别为 10 个 skills；`pause-and-resume` 已成功复制到临时 Codex 与 Claude Code skill 目录，两个 `SKILL.md` 副本与发布源逐字节一致。
+- `clear-communication` 已通过包结构和 Skill 结构校验。临时安装到 Codex、Claude Code 项目目录后，6 个发布文件均与源码逐字节一致；Codex `0.163.0-alpha.10.2` 与 Claude Code `2.1.296` 的原生接口均能发现该项目 Skill。这项检查没有向模型发送实际任务。
 - `pause-and-resume` 已通过 Skill 结构校验；公开文件与完成 Codex 暂停续跑行为测试时使用的源文件逐字节一致。
-- `assess-interview-candidate` 的 77 项单元和公开包测试在 Python 3.11、3.14 上均通过；Skill 结构校验、Ruff、JSON、Python 3.10 语法、JavaScript 语法和离线报告契约校验也已通过。本轮照片布局升级尚未完成独立的真实浏览器视觉复核。
+- `assess-interview-candidate` 的 83 项单元和公开包测试在 Python 3.11、3.14 上均通过；Skill 结构校验、Ruff、JSON、Python 3.10 语法、JavaScript 语法和离线报告契约校验也已通过。本轮照片布局升级尚未完成独立的真实浏览器视觉复核。
 - Windows 与 Linux 兼容性通过路径、启动器、标准库、保留文件名和外壳无关规则约束；本轮没有在真实 Windows 或 Linux 主机上运行。
 
 ## 安全和隐私
@@ -451,6 +541,18 @@ COMPASS 的默认安全边界：
 - 日报 / 周报 / 项目复盘：基于用户画像和任务森林生成更贴合用户目标的报告。
 - 任务排序和 deadline planning：结合任务重量、用户能力、上下文切换成本和 deadline 推荐执行顺序。
 - 健康习惯和节奏系统：用任务森林观察长期负载，帮助用户安排更可持续的工作节奏。
+
+## 致谢
+
+`clear-communication` 的设计参考了以下工作：
+
+- [GPT with Taste](https://github.com/NB-Corp/gpt-with-taste/tree/079fb262b4d7932515ba4e6341fd57b6f2122f4a)：从读者当前任务出发组织信息，省去不影响理解或操作的过程汇报。
+- [plain-english](https://github.com/Tradelord223/plain-english/tree/d108f2b61544cdabb33cd67f6365faf3f51259a9)：保留原意、确定性、条件、执行状态和精确技术标识。
+- [International Plain Language Federation 的定义（由 Clarity 机构页面转载）](https://www.clarity-international.org/)：从读者能否找到、理解和使用所需信息来评价表达。
+- [plain-writing-skill](https://github.com/docwriter-org/plain-writing-skill/tree/f0d3630983ac7a82aa580f1c1509d72df739ee12)：同任务配对对照与匿名评审的评测组织方式。
+- [Agrawal 与 Carpuat，TACL 2024](https://aclanthology.org/2024.tacl-1.24/)：用阅读理解问题辅助检查改写后的意义保留。
+
+[来源说明](skills/clear-communication/references/sources.md) 区分了改编的写作原则和评测方法参考。Skill 包保留原始 MIT 许可声明，入口见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。这些来源本身不能证明当前 Skill 的效果。
 
 ## 开源许可证
 
